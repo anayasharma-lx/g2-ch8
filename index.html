@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 8 · Measurement</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ocean:#0B3D6B;--deep:#051E35;--teal:#14B8A6;--teal2:#0D9488;
+  --coral:#FF6B6B;--coral2:#EE5A5A;--sand:#FFF4E0;--foam:#E0FAFA;
+  --sky:#B8E8FF;--sun:#FFD93D;
+}
+html,body{width:100%;min-height:100vh}
+body{font-family:'Nunito',sans-serif;background:linear-gradient(180deg,#B8E8FF 0%,#7DD3FC 25%,#38BDF8 45%,#0284C7 65%,#0B3D6B 100%);min-height:100vh;padding:0 0 32px;display:flex;flex-direction:column;align-items:center;}
+
+/* wave header */
+.ocean-header{
+  width:100%;background:linear-gradient(180deg,var(--deep),var(--ocean));
+  padding:16px 20px 28px;position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.wave{position:absolute;bottom:0;left:0;right:0;height:18px;background:var(--teal);clip-path:polygon(0 100%,0 60%,2% 30%,4% 60%,6% 30%,8% 60%,10% 30%,12% 60%,14% 30%,16% 60%,18% 30%,20% 60%,22% 30%,24% 60%,26% 30%,28% 60%,30% 30%,32% 60%,34% 30%,36% 60%,38% 30%,40% 60%,42% 30%,44% 60%,46% 30%,48% 60%,50% 30%,52% 60%,54% 30%,56% 60%,58% 30%,60% 60%,62% 30%,64% 60%,66% 30%,68% 60%,70% 30%,72% 60%,74% 30%,76% 60%,78% 30%,80% 60%,82% 30%,84% 60%,86% 30%,88% 60%,90% 30%,92% 60%,94% 30%,96% 60%,98% 30%,100% 60%,100% 100%);}
+.bubbles{position:absolute;inset:0;pointer-events:none}
+.bub{position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,.3);animation:rise 3s ease-in infinite}
+@keyframes rise{from{opacity:.6;transform:translateY(0)}to{opacity:0;transform:translateY(-60px)}}
+.oh-title{font-family:'Fredoka One',cursive;font-size:26px;color:#fff;z-index:1;text-shadow:0 2px 0 rgba(0,0,0,.2)}
+.oh-chip{background:var(--coral);color:#fff;font-size:12px;font-weight:900;padding:5px 14px;border-radius:20px;z-index:1;border:2px solid rgba(255,255,255,.2)}
+
+.page{width:100%;max-width:700px;padding:16px;display:flex;flex-direction:column;gap:20px}
+.ocard{background:rgba(255,255,255,.96);border-radius:24px;padding:20px;box-shadow:0 6px 0 rgba(0,0,0,.15),0 2px 20px rgba(0,0,0,.1);border:3px solid rgba(255,255,255,.9);position:relative;overflow:hidden}
+.ocard::before{content:'';position:absolute;top:0;left:0;right:0;height:6px;border-radius:24px 24px 0 0}
+.ocard.teal::before{background:var(--teal)}.ocard.coral::before{background:var(--coral)}.ocard.sun::before{background:var(--sun)}
+.oc-title{font-family:'Fredoka One',cursive;font-size:20px;color:var(--ocean);margin-bottom:4px}
+.hint{font-size:13px;font-weight:700;color:var(--teal2);margin-bottom:14px;line-height:1.5}
+
+/* fish controls */
+.fish-ctrl{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.fc-lbl{font-family:'Fredoka One',cursive;font-size:15px;color:var(--ocean)}
+.csbtn{width:36px;height:36px;border-radius:50%;border:none;background:var(--teal);color:#fff;font-size:20px;font-weight:900;cursor:pointer;transition:transform .1s;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 rgba(0,0,0,.15)}
+.csbtn:active{transform:scale(.88)}
+.len-disp{font-family:'Fredoka One',cursive;font-size:28px;color:var(--ocean);min-width:32px;text-align:center}
+
+.ruler-wrap{overflow-x:auto;border-radius:14px;background:var(--foam);border:2.5px solid var(--teal);padding:12px;margin-bottom:14px}
+canvas{display:block;border-radius:8px}
+.meas-hero{text-align:center;margin-bottom:8px}
+.meas-big{font-family:'Fredoka One',cursive;font-size:80px;color:var(--teal2);line-height:1;text-shadow:0 3px 0 rgba(0,0,0,.08)}
+.meas-unit{font-family:'Fredoka One',cursive;font-size:22px;color:var(--ocean);margin-top:2px}
+
+/* ordering activity */
+.fish-items{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.fish-card{background:var(--foam);border-radius:14px;padding:10px 14px;border:2.5px solid var(--teal);text-align:center;cursor:pointer;transition:all .18s;user-select:none}
+.fish-card:hover{border-color:var(--teal2);transform:scale(1.05)}
+.fish-card.selected{border-color:var(--coral);background:#FFE8E8;transform:scale(1.07);box-shadow:0 4px 10px rgba(255,107,107,.2)}
+.fc-emoji{font-size:30px;line-height:1.2}
+.fc-len{font-family:'Fredoka One',cursive;font-size:16px;color:var(--teal2)}
+
+.slot-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.slot{
+  min-width:88px;min-height:72px;border-radius:14px;
+  border:2.5px dashed var(--teal);background:var(--foam);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .15s;font-size:11px;font-weight:800;color:var(--teal2);text-align:center;padding:4px;
+}
+.slot:hover{border-color:var(--coral);background:#FFE8E8}
+.slot.filled{border-style:solid;border-color:var(--teal2);background:var(--foam)}
+.slot .s-emoji{font-size:26px;line-height:1.2}
+.slot .s-len{font-family:'Fredoka One',cursive;font-size:15px;color:var(--teal2)}
+.order-fb{font-family:'Fredoka One',cursive;font-size:16px;min-height:22px;margin-bottom:8px;text-align:center}
+.refresh-btn{background:var(--teal);color:#fff;border:none;border-radius:14px;padding:10px 22px;font-family:'Fredoka One',cursive;font-size:15px;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.12);transition:all .18s}
+.refresh-btn:hover{transform:scale(1.06)}
+
+/* quiz */
+.mq{font-family:'Fredoka One',cursive;font-size:17px;color:var(--ocean);margin-bottom:8px}
+.mvis{font-size:22px;margin:8px 0;min-height:28px}
+.type-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0}
+.type-inp{font-family:'Fredoka One',cursive;font-size:28px;width:80px;height:54px;border-radius:12px;border:3px solid var(--teal);text-align:center;color:var(--ocean);outline:none;background:var(--foam);-moz-appearance:textfield}
+.type-inp::-webkit-outer-spin-button,.type-inp::-webkit-inner-spin-button{-webkit-appearance:none}
+.type-inp:focus{border-color:var(--teal2)}
+.unit-lbl{font-family:'Fredoka One',cursive;font-size:17px;color:var(--teal2)}
+.check-btn{background:var(--teal);color:#fff;border:none;border-radius:12px;padding:12px 22px;font-family:'Fredoka One',cursive;font-size:16px;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.12);transition:all .18s}
+.check-btn:hover{transform:scale(1.06)}
+.type-fb{font-family:'Fredoka One',cursive;font-size:16px;min-height:22px;margin-top:8px}
+.next-btn{margin-top:12px;background:var(--teal);color:#fff;border:none;border-radius:16px;padding:12px 28px;font-family:'Fredoka One',cursive;font-size:17px;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.12);transition:all .18s}
+.next-btn:hover{transform:scale(1.06)}
+</style>
+</head>
+<body>
+
+<div class="ocean-header">
+  <div class="bubbles" id="bubs"></div>
+  <div class="wave"></div>
+  <div class="oh-title">🐠 Measurement</div>
+  <div class="oh-chip">Chapter 8</div>
+</div>
+
+<div class="page">
+
+  <div class="ocard teal">
+    <div class="oc-title">📏 How long is the fish?</div>
+    <div class="hint">Press + and − to change the fish's length. Read the ruler to see how many centimetres it is. Count the marks from 0!</div>
+    <div class="fish-ctrl">
+      <span class="fc-lbl">Fish length:</span>
+      <button class="csbtn" onclick="changeLen(-1)">−</button>
+      <span class="len-disp" id="lenDisp">8</span>
+      <button class="csbtn" onclick="changeLen(1)">+</button>
+      <span class="fc-lbl">cm</span>
+    </div>
+    <div class="ruler-wrap"><canvas id="rulerCvs" width="580" height="110"></canvas></div>
+    <div class="meas-hero">
+      <div class="meas-big" id="measBig">8</div>
+      <div class="meas-unit">centimetres long</div>
+    </div>
+  </div>
+
+  <div class="ocard coral">
+    <div class="oc-title">🐟 Order the fish — shortest to longest!</div>
+    <div class="hint">Tap a fish to select it (it glows orange), then tap where you want to put it — 1st is shortest, 3rd is longest!</div>
+    <div class="fish-items" id="fishItems"></div>
+    <div style="font-family:'Fredoka One',cursive;font-size:13px;color:var(--teal2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Put them in order:</div>
+    <div class="slot-row" id="slotRow"></div>
+    <div class="order-fb" id="orderFb"></div>
+    <button class="refresh-btn" onclick="newOrder()">New fish ↻</button>
+  </div>
+
+  <div class="ocard sun">
+    <div class="oc-title">✏️ Measurement question!</div>
+    <div class="hint">Read carefully, work out the answer, then type it!</div>
+    <div class="mq" id="mq">Loading…</div>
+    <div class="mvis" id="mvis"></div>
+    <div class="type-row">
+      <input type="number" class="type-inp" id="measInput" min="0" max="30" placeholder="?">
+      <span class="unit-lbl">cm</span>
+      <button class="check-btn" onclick="checkMeas()">Check ✓</button>
+    </div>
+    <div class="type-fb" id="measFb"></div>
+    <button class="next-btn" onclick="newMeasQ()">Next question ➡️</button>
+  </div>
+
+</div>
+
+<script>
+/* Bubbles */
+const bubs=document.getElementById('bubs');
+for(let i=0;i<8;i++){const b=document.createElement('div');b.className='bub';const sz=4+Math.random()*10;b.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*90}%;bottom:${Math.random()*60}%;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*2}s`;bubs.appendChild(b);}
+
+/* Ruler + fish canvas */
+const CM_PX=36;
+let fishLen=8;
+const FISH_COLORS=['#14B8A6','#FF6B6B','#F59E0B','#8B5CF6','#EC4899','#06B6D4'];
+
+function changeLen(d){fishLen=Math.max(2,Math.min(14,fishLen+d));document.getElementById('lenDisp').textContent=fishLen;document.getElementById('measBig').textContent=fishLen;drawRuler();}
+
+function drawRuler(){
+  const cvs=document.getElementById('rulerCvs');const ctx=cvs.getContext('2d');
+  const W=cvs.width,H=cvs.height;ctx.clearRect(0,0,W,H);
+  const LPAD=16,TOP=14;
+  // ruler body
+  ctx.fillStyle='#E0FAFA';ctx.strokeStyle='#14B8A6';ctx.lineWidth=2;
+  ctx.beginPath();ctx.roundRect(LPAD,55,15*CM_PX+4,36,6);ctx.fill();ctx.stroke();
+  // ticks
+  for(let cm=0;cm<=15;cm++){
+    const x=LPAD+cm*CM_PX;const major=cm%5===0;
+    ctx.strokeStyle=major?'#0D9488':'#5EEAD4';ctx.lineWidth=major?2:1.5;
+    ctx.beginPath();ctx.moveTo(x,55);ctx.lineTo(x,major?42:47);ctx.stroke();
+    if(major||cm===1){ctx.fillStyle='#0D9488';ctx.font=`bold ${major?13:10}px Nunito`;ctx.textAlign='center';ctx.fillText(cm,x,major?38:35);}
+  }
+  ctx.fillStyle='#0D9488';ctx.font='bold 10px Nunito';ctx.textAlign='right';ctx.fillText('cm',W-4,95);
+  // fish
+  const col=FISH_COLORS[fishLen%FISH_COLORS.length];
+  const fishW=fishLen*CM_PX;const fx=LPAD;const fy=TOP;const fh=28;
+  // body ellipse
+  ctx.fillStyle=col;ctx.beginPath();ctx.ellipse(fx+fishW/2,fy+fh/2,fishW/2-1,fh/2,0,0,Math.PI*2);ctx.fill();
+  // tail
+  ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(fx+4,fy+2);ctx.lineTo(fx-8,fy+fh/2);ctx.lineTo(fx+4,fy+fh-2);ctx.closePath();ctx.fill();
+  // eye
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(fx+fishW*.78,fy+fh*.3,4,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#1E293B';ctx.beginPath();ctx.arc(fx+fishW*.78+.5,fy+fh*.3-.5,2,0,Math.PI*2);ctx.fill();
+  // arrow
+  ctx.strokeStyle='#0D9488';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(fx,52);ctx.lineTo(fx+fishW,52);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#0D9488';ctx.font='bold 12px Fredoka One,cursive';ctx.textAlign='center';
+  ctx.fillText('← '+fishLen+' cm →',fx+fishW/2,H-4);
+}
+drawRuler();
+
+/* Fish ordering */
+const FISH_NAMES=['Rohu','Catla','Hilsa','Pomfret','Bream'];
+const FISH_EM=['🐟','🐠','🐡','🦈','🐬'];
+let orderFish=[],selFish=null,orderSlots=[];
+
+function newOrder(){
+  const lens=new Set();while(lens.size<3)lens.add(Math.floor(Math.random()*8)+3);
+  orderFish=[...lens].sort(()=>Math.random()-.5).map((l,i)=>({name:FISH_NAMES[i],em:FISH_EM[i],len:l,placed:false}));
+  orderSlots=[null,null,null];selFish=null;
+  document.getElementById('orderFb').textContent='';
+  renderFishItems();renderSlots();
+}
+function renderFishItems(){
+  const div=document.getElementById('fishItems');div.innerHTML='';
+  orderFish.forEach((f,i)=>{
+    if(f.placed)return;
+    const c=document.createElement('div');c.className='fish-card';if(selFish===i)c.classList.add('selected');
+    c.innerHTML=`<div class="fc-emoji">${f.em}</div><div>${f.name}</div><div class="fc-len">${f.len} cm</div>`;
+    c.onclick=()=>{selFish=i;renderFishItems();};div.appendChild(c);
+  });
+}
+function renderSlots(){
+  const div=document.getElementById('slotRow');div.innerHTML='';
+  ['1st (shortest)','2nd','3rd (longest)'].forEach((lbl,i)=>{
+    const s=document.createElement('div');s.className='slot'+(orderSlots[i]?' filled':'');
+    if(orderSlots[i])s.innerHTML=`<div class="s-emoji">${orderSlots[i].em}</div><div class="s-len">${orderSlots[i].len} cm</div>`;
+    else s.textContent=lbl;
+    s.onclick=()=>{
+      if(selFish===null&&orderSlots[i]){orderFish.forEach(f=>{if(f===orderSlots[i])f.placed=false;});orderSlots[i]=null;renderFishItems();renderSlots();checkOrder();return;}
+      if(selFish!==null&&!orderSlots[i]){orderFish[selFish].placed=true;orderSlots[i]=orderFish[selFish];selFish=null;renderFishItems();renderSlots();checkOrder();}
+    };
+    div.appendChild(s);
+  });
+}
+function checkOrder(){
+  if(orderSlots.some(s=>s===null))return;
+  const sorted=[...orderFish].sort((a,b)=>a.len-b.len);
+  const ok=orderSlots.every((s,i)=>s&&s.len===sorted[i].len);
+  const fb=document.getElementById('orderFb');
+  if(ok){fb.textContent='🎉 Perfect! Shortest → '+orderSlots.map(s=>s.len+' cm').join(' → longest ')+'!';fb.style.color='var(--teal2)';}
+  else{fb.textContent='Compare the cm numbers and try a different order!';fb.style.color='var(--coral)';}
+}
+newOrder();
+
+/* Quiz */
+let mAns=0;
+const TYPES=['read','longer','shorter','diff'];
+function newMeasQ(){
+  const t=TYPES[Math.floor(Math.random()*TYPES.length)];
+  const l1=Math.floor(Math.random()*8)+3,l2=Math.floor(Math.random()*8)+3;
+  document.getElementById('measFb').textContent='';document.getElementById('measInput').value='';
+  const types={
+    read:()=>{mAns=l1;document.getElementById('mq').textContent='A ribbon is '+l1+' cm long. Type the length:';document.getElementById('mvis').textContent='🎀 '+'—'.repeat(l1)+' ('+l1+' cm)';},
+    longer:()=>{mAns=Math.max(l1,l2);document.getElementById('mq').textContent='Pencil A is '+l1+' cm. Pencil B is '+l2+' cm. How long is the longer pencil?';document.getElementById('mvis').textContent='✏️ '+l1+' cm   vs   ✏️ '+l2+' cm';},
+    shorter:()=>{mAns=Math.min(l1,l2);document.getElementById('mq').textContent='Stick A is '+l1+' cm. Stick B is '+l2+' cm. How long is the shorter one?';document.getElementById('mvis').textContent='🔧 '+l1+' cm   vs   🔧 '+l2+' cm';},
+    diff:()=>{mAns=Math.abs(l1-l2);document.getElementById('mq').textContent='Rope A is '+l1+' cm. Rope B is '+l2+' cm. How many cm longer is the longer rope?';document.getElementById('mvis').textContent='🪢 '+l1+' cm   vs   🪢 '+l2+' cm';}
+  };
+  types[t]();
+}
+function checkMeas(){
+  const v=parseInt(document.getElementById('measInput').value);const fb=document.getElementById('measFb');
+  if(v===mAns){fb.textContent='🎉 Correct! '+mAns+' cm! ⭐';fb.style.color='var(--teal2)';}
+  else if(isNaN(v)){fb.textContent='Type a number!';fb.style.color='var(--coral)';}
+  else{fb.textContent='Not quite — think carefully and try again!';fb.style.color='var(--coral)';}
+}
+newMeasQ();
+</script>
+</body>
+</html>

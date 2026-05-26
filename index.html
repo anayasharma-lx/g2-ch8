@@ -4,462 +4,163 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chapter 8 · Measurement</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Grandstander:wght@500;600;700;800;900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --accent:#0D9488;--accent-light:#F0FDFA;--accent-mid:#99F6E4;
-  --accent-dark:#0F766E;--bg:#F7F8FA;--surface:#FFFFFF;
-  --ink:#1C2B2B;--ink2:#4B6060;--border:#E4EAE9;
-  --success:#16A34A;--success-bg:#DCFCE7;
-  --error:#DC2626;--error-bg:#FEE2E2;
-}
-html,body{width:100%;min-height:100vh;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);overflow-x:hidden}
-
-/* ── HEADER / TABS ── */
-.header{width:100%;background:var(--surface);border-bottom:2px solid var(--border);padding:16px 20px 0;display:flex;flex-direction:column;align-items:center;position:sticky;top:0;z-index:100}
-.header-row{width:100%;max-width:640px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.chapter-label{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);background:var(--accent-light);padding:4px 12px;border-radius:20px}
-.header-title{font-size:20px;font-weight:900;color:var(--ink)}
-.tabs{display:flex;gap:4px;width:100%;max-width:640px}
-.tab{flex:1;padding:10px 0;text-align:center;font-size:14px;font-weight:800;cursor:pointer;border-bottom:3px solid transparent;color:var(--ink2);transition:all .2s;border-radius:8px 8px 0 0}
-.tab:hover{color:var(--accent);background:var(--accent-light)}
-.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-
-/* ── LAYOUT ── */
-.page{width:100%;max-width:640px;margin:0 auto;padding:24px 16px 48px;display:flex;flex-direction:column;gap:20px}
-.panel{display:none}.panel.active{display:flex;flex-direction:column;gap:20px}
-
-/* ── CARD ── */
-.card{background:var(--surface);border-radius:16px;padding:22px;border:1.5px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.05);position:relative}
-.card-accent{position:absolute;top:0;left:0;bottom:0;width:4px;border-radius:16px 0 0 16px}
-.card-accent.teal{background:var(--accent)}
-.card-accent.green{background:#16A34A}
-.card-accent.amber{background:#D97706}
-.card-title{font-size:17px;font-weight:900;color:var(--ink);margin-bottom:4px;padding-left:12px}
-.card-sub{font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:20px;padding-left:12px;line-height:1.5}
-
-/* ── SCORE BAR ── */
-.score-bar{display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:10px;padding:10px 14px;border:1.5px solid var(--border)}
-.score-label{font-size:12px;font-weight:800;color:var(--ink2);flex:1}
-.score-nums{font-size:14px;font-weight:900;color:var(--accent)}
-
-/* ── SHARED BUTTONS ── */
-.next-btn{margin-top:16px;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:12px 26px;font-size:15px;font-weight:800;cursor:pointer;transition:all .18s;align-self:flex-start}
-.next-btn:hover{background:var(--accent-dark);transform:translateY(-1px)}
-.refresh-btn{background:var(--surface);border:2px solid var(--border);color:var(--ink2);font-size:14px;font-weight:800;padding:9px 20px;border-radius:10px;cursor:pointer;transition:all .15s;margin-top:4px}
-.refresh-btn:hover{border-color:var(--accent);color:var(--accent)}
-.check-btn{background:var(--accent);color:#fff;border:none;border-radius:12px;padding:12px 22px;font-size:15px;font-weight:800;cursor:pointer;transition:all .18s}
-.check-btn:hover{background:var(--accent-dark);transform:translateY(-1px)}
-.fb{font-size:15px;font-weight:800;min-height:22px;margin-top:12px;text-align:center}
-
-/* ══════════════════════════════════════
-   LEARN TAB — RULER EXPLORER
-══════════════════════════════════════ */
-.ctrl-row{display:flex;align-items:center;gap:14px;margin-bottom:16px}
-.ctrl-lbl{font-size:14px;font-weight:800;color:var(--ink2)}
-.ctrl-btn{width:40px;height:40px;border-radius:50%;border:none;background:var(--accent);color:#fff;font-size:22px;font-weight:900;cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.ctrl-btn:active{transform:scale(.88)}
-.len-num{font-size:32px;font-weight:900;color:var(--accent-dark);min-width:36px;text-align:center}
-.ruler-wrap{border-radius:12px;background:var(--accent-light);border:1.5px solid var(--accent-mid);padding:10px;margin-bottom:16px}
-canvas{display:block;width:100%;border-radius:6px}
-.len-hero{text-align:center;padding:10px 0 4px}
-.len-big{font-size:68px;font-weight:900;color:var(--accent-dark);line-height:1}
-.len-unit{font-size:15px;font-weight:800;color:var(--ink2);margin-top:2px}
-
-/* ══════════════════════════════════════
-   PRACTICE — Q1: READ THE RULER
-   Show a ruler with a bar of mystery length,
-   child picks from 4 options
-══════════════════════════════════════ */
-.ruler-q-wrap{border-radius:12px;background:var(--accent-light);border:1.5px solid var(--accent-mid);padding:10px;margin-bottom:20px}
-.opts{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:4px}
-.opt{font-size:22px;font-weight:900;min-width:68px;height:54px;border-radius:12px;border:2px solid var(--border);background:var(--surface);cursor:pointer;color:var(--ink);transition:all .14s;padding:0 14px;display:flex;align-items:center;justify-content:center}
-.opt:hover{border-color:var(--accent);background:var(--accent-light);transform:translateY(-2px)}
-.opt.correct{background:var(--success-bg);border-color:var(--success);color:var(--success)}
-.opt.wrong{background:var(--error-bg);border-color:var(--error);color:var(--error)}
-
-/* ══════════════════════════════════════
-   PRACTICE — Q2: ORDERING
-   Three horizontal bars of different lengths.
-   Child taps them in order shortest → longest.
-══════════════════════════════════════ */
-.order-instruction{font-size:14px;font-weight:800;color:var(--ink2);margin-bottom:14px;line-height:1.5}
-.bar-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
-.bar-item{
-  display:flex;align-items:center;gap:10px;
-  background:var(--bg);border-radius:12px;padding:10px 12px;
-  border:2px solid var(--border);cursor:pointer;transition:all .18s;
-  user-select:none;
-}
-.bar-item:hover{border-color:var(--accent-mid)}
-.bar-item.selected{border-color:var(--accent);background:var(--accent-light)}
-.bar-item.locked{cursor:default;opacity:.7}
-.bar-item.correct-order{border-color:var(--success);background:var(--success-bg)}
-.bar-label{font-size:15px;font-weight:900;color:var(--ink);min-width:20px;flex-shrink:0}
-.bar-track{flex:1;height:28px;background:var(--border);border-radius:8px;overflow:hidden;position:relative}
-.bar-fill{height:100%;border-radius:8px;transition:width .3s}
-.bar-cm{font-size:14px;font-weight:900;color:var(--ink2);min-width:38px;text-align:right;flex-shrink:0}
-
-.order-slots{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-.order-slot{
-  flex:1;min-width:80px;min-height:52px;border-radius:12px;
-  border:2px dashed var(--accent-mid);background:var(--accent-light);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  cursor:pointer;transition:all .15s;padding:6px 4px;
-}
-.order-slot:hover{border-color:var(--accent)}
-.order-slot.filled{border-style:solid;border-color:var(--accent-dark)}
-.order-slot.correct-slot{border-color:var(--success);background:var(--success-bg)}
-.order-slot.wrong-slot{border-color:var(--error);background:var(--error-bg)}
-.slot-label{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);margin-bottom:3px}
-.slot-content{font-size:14px;font-weight:900;color:var(--accent-dark)}
+:root{--ac:#059669;--bg:#FDF6EE;--card:#fff;--ink:#1A2E2E;--ink2:#5F7A7A;--ok:#16A34A;--no:#DC2626;--r:20px}
+html,body{width:100%;min-height:100vh;font-family:'Poppins',sans-serif;background:var(--bg);color:var(--ink);overflow-x:hidden}
+.hdr{width:100%;position:sticky;top:0;z-index:100;background:var(--ac);box-shadow:0 4px 24px rgba(0,0,0,.15)}
+.hdr-in{max-width:640px;margin:0 auto;padding:14px 20px 0;text-align:center}
+.ch-n{font-family:'Grandstander',cursive;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.65)}
+.ch-t{font-family:'Grandstander',cursive;font-size:clamp(18px,5vw,26px);font-weight:900;color:#fff;line-height:1.2;margin:2px 0 10px;text-shadow:0 2px 8px rgba(0,0,0,.1)}
+.tabs{display:flex;gap:4px;max-width:280px;margin:0 auto;background:rgba(0,0,0,.1);border-radius:14px 14px 0 0;padding:4px 4px 0}
+.tab{flex:1;padding:9px 0;text-align:center;font-family:'Grandstander',cursive;font-size:14px;font-weight:800;cursor:pointer;border-radius:12px 12px 0 0;color:rgba(255,255,255,.6);transition:.2s;user-select:none}
+.tab.on{background:var(--bg);color:var(--ac)}
+.tab:not(.on):hover{color:#fff;background:rgba(255,255,255,.08)}
+.page{max-width:620px;margin:0 auto;padding:14px 14px 60px}
+.pnl{display:none;flex-direction:column;gap:16px}.pnl.on{display:flex}
+.card{background:var(--card);border-radius:var(--r);padding:20px 18px;box-shadow:0 3px 16px rgba(0,0,0,.06);position:relative;overflow:hidden}
+.cb{position:absolute;top:0;left:0;bottom:0;width:5px;border-radius:var(--r) 0 0 var(--r);background:var(--ac)}
+.ct{font-family:'Grandstander',cursive;font-size:15px;font-weight:800;padding-left:14px;margin-bottom:3px;line-height:1.3}
+.cs{font-size:12px;color:var(--ink2);padding-left:14px;margin-bottom:14px;line-height:1.6}
+/* stepper */
+.cr{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.cg{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.03);border-radius:12px;padding:8px 12px;border:1.5px solid rgba(0,0,0,.06)}
+.cl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;min-width:48px}
+.sb{width:34px;height:34px;border-radius:50%;border:none;font-size:18px;font-weight:900;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.12s;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.sb:active{transform:scale(.88)}
+.sv{font-family:'Grandstander',cursive;font-size:28px;font-weight:900;min-width:28px;text-align:center}
+/* blocks */
+.bx{background:rgba(0,0,0,.02);border-radius:14px;border:1.5px solid rgba(0,0,0,.06);padding:12px;min-height:60px;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-bottom:14px}
+.flat{display:grid;grid-template-columns:repeat(10,8px);gap:1px}.flat-c{width:8px;height:8px;border-radius:1px;opacity:.8}
+.rod{display:flex;flex-direction:column;gap:1px}.rod-c{width:10px;height:10px;border-radius:1px;opacity:.8}
+.units{display:flex;flex-wrap:wrap;gap:2px;max-width:58px;align-self:flex-end}.unit-c{width:10px;height:10px;border-radius:2px;opacity:.8}
+.sep{width:1px;background:#D1D5DB;align-self:stretch;margin:0 3px}
+/* options */
+.opts{display:flex;gap:8px;flex-wrap:wrap}
+.opt{font-family:'Grandstander',cursive;font-size:22px;font-weight:800;min-width:72px;height:54px;border-radius:16px;border:2.5px solid rgba(0,0,0,.08);background:#fff;cursor:pointer;color:var(--ink);display:flex;align-items:center;justify-content:center;transition:.15s;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.opt:hover{border-color:var(--ac);transform:translateY(-2px)}
+.opt.ok{background:#DCFCE7;border-color:var(--ok);color:#15803D;animation:pop .3s}
+.opt.no{background:#FEE2E2;border-color:var(--no);color:var(--no);animation:shk .35s}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.fb{font-family:'Grandstander',cursive;font-size:14px;font-weight:700;min-height:20px;margin-top:10px;text-align:center}
+.nbtn{font-family:'Grandstander',cursive;font-size:14px;font-weight:800;padding:10px 24px;border-radius:14px;border:none;background:var(--ac);color:#fff;cursor:pointer;margin-top:12px;box-shadow:0 3px 10px rgba(0,0,0,.12);transition:.15s}
+.nbtn:hover{transform:translateY(-1px);opacity:.9}
+.btn{font-family:'Grandstander',cursive;font-size:14px;font-weight:800;padding:10px 20px;border-radius:14px;border:none;cursor:pointer;transition:.15s;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.btn:hover{transform:translateY(-1px)}
+.btn-p{background:var(--ac);color:#fff}
+.btn-g{background:#fff;color:var(--ink2);border:1.5px solid rgba(0,0,0,.1)}
+.btn-g:hover{border-color:var(--ac);color:var(--ac)}
+.chal{background:rgba(0,0,0,.02);border-radius:16px;padding:14px;border:1.5px dashed rgba(0,0,0,.1);margin-top:10px}
+.chal-q{font-family:'Grandstander',cursive;font-size:14px;font-weight:800;margin-bottom:10px}
+.chal-q b{color:var(--ac);font-size:22px}
+canvas{display:block;border-radius:10px}
+/* drag & tap shared */
+.tappable{cursor:pointer;user-select:none;transition:transform .15s}
+.tappable:hover{transform:scale(1.08)}
+.tappable:active{transform:scale(.92)}
+/* misc */
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pill{display:inline-block;font-family:'Grandstander',cursive;font-size:14px;font-weight:800;padding:6px 18px;border-radius:30px}
+.big{font-family:'Grandstander',cursive;font-weight:900;line-height:1;text-align:center}
 </style>
 </head>
 <body>
-
-<div class="header">
-  <div class="header-row">
-    <span class="chapter-label">Chapter 8</span>
-    <span class="header-title">Measurement</span>
-  </div>
+<div class="hdr"><div class="hdr-in">
+  <div class="ch-n">Chapter 8</div>
+  <div class="ch-t">Measurement</div>
   <div class="tabs">
-    <div class="tab active" onclick="switchTab('learn')">Learn</div>
-    <div class="tab" onclick="switchTab('practice')">Practice</div>
+    <div class="tab on" onclick="sw('learn')">Learn</div>
+    <div class="tab" onclick="sw('practice')">Practice</div>
   </div>
-</div>
-
+</div></div>
 <div class="page">
 
-  <!-- ══ LEARN ══ -->
-  <div class="panel active" id="panel-learn">
-    <div class="card">
-      <div class="card-accent teal"></div>
-      <div class="card-title">How long is the object?</div>
-      <div class="card-sub">Press + and − to change the length. Read the ruler — count the marks from 0.</div>
-
-      <div class="ctrl-row">
-        <span class="ctrl-lbl">Length:</span>
-        <button class="ctrl-btn" onclick="changeLen(-1)">−</button>
-        <span class="len-num" id="lenDisp">8</span>
-        <button class="ctrl-btn" onclick="changeLen(1)">+</button>
-        <span class="ctrl-lbl">cm</span>
-      </div>
-
-      <div class="ruler-wrap">
-        <canvas id="learnCvs"></canvas>
-      </div>
-
-      <div class="len-hero">
-        <div class="len-big" id="lenBig">8</div>
-        <div class="len-unit">centimetres</div>
-      </div>
+<div class="pnl on" id="p-learn">
+  <div class="card"><div class="cb"></div>
+    <div class="ct">How long is the object?</div>
+    <div class="cs">Adjust the length. The ruler shows centimetres — count the marks from 0.</div>
+    <div class="cr">
+      <div class="cg"><span class="cl" style="color:var(--ac)">Length</span><button class="sb" style="background:var(--ac)" onclick="chL(-1)">−</button><span class="sv" style="color:var(--ac)" id="lv">8</span><button class="sb" style="background:var(--ac)" onclick="chL(1)">+</button><span style="font-size:12px;font-weight:700;color:var(--ink2)">cm</span></div>
     </div>
-  </div>
-
-  <!-- ══ PRACTICE ══ -->
-  <div class="panel" id="panel-practice">
-    <div class="score-bar">
-      <span class="score-label">Score</span>
-      <span class="score-nums" id="scoreDisplay">0 correct / 0 total</span>
-    </div>
-
-    <!-- Q1: Read the ruler -->
-    <div class="card">
-      <div class="card-accent teal"></div>
-      <div class="card-title">How long is this?</div>
-      <div class="card-sub">Look at the ruler. Count from 0 to where the object ends. Pick the right length.</div>
-      <div class="ruler-q-wrap">
-        <canvas id="pracCvs"></canvas>
-      </div>
-      <div class="opts" id="rulerOpts"></div>
-      <div class="fb" id="rulerFb"></div>
-      <button class="next-btn" onclick="newRulerQ()">Next →</button>
-    </div>
-
-    <!-- Q2: Order shortest to longest -->
-    <div class="card">
-      <div class="card-accent amber"></div>
-      <div class="card-title">Order shortest to longest</div>
-      <div class="card-sub">Look at the bars. Tap them in order — shortest first, longest last.</div>
-
-      <div class="order-instruction" id="orderInstr">Tap the <strong>shortest</strong> bar first.</div>
-      <div class="bar-list" id="barList"></div>
-
-      <div style="font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);margin-bottom:8px">Your order:</div>
-      <div class="order-slots" id="orderSlots"></div>
-
-      <div class="fb" id="orderFb"></div>
-      <button class="refresh-btn" onclick="newOrderQ()">New set ↻</button>
-    </div>
-
+    <div id="rulerArea" style="background:rgba(0,0,0,.02);border-radius:14px;padding:14px;border:1.5px solid rgba(0,0,0,.06);overflow-x:auto;margin-bottom:14px"></div>
+    <div style="text-align:center"><div class="big" style="font-size:60px;color:var(--ac)" id="lenBig">8</div><div style="font-size:14px;font-weight:700;color:var(--ink2)">centimetres</div></div>
   </div>
 </div>
-
+<div class="pnl" id="p-practice">
+  <div class="card"><div class="cb"></div>
+    <div class="ct">How long is this?</div>
+    <div class="cs">Count from 0 to where the bar ends. Pick the right length.</div>
+    <div id="qRuler" style="background:rgba(0,0,0,.02);border-radius:14px;padding:14px;border:1.5px solid rgba(0,0,0,.06);overflow-x:auto;margin-bottom:14px"></div>
+    <div class="opts" id="rO"></div><div class="fb" id="rF"></div>
+    <button class="nbtn" onclick="nwRQ()">Next →</button>
+  </div>
+  <div class="card"><div class="cb"></div>
+    <div class="ct">Order shortest to longest</div>
+    <div class="cs">Look at the bars. Tap them in order — shortest first.</div>
+    <div style="font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:10px" id="ordI">Tap the shortest bar.</div>
+    <div id="barList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px"></div>
+    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--ink2);margin-bottom:8px">Your order:</div>
+    <div id="ordSlots" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"></div>
+    <div class="fb" id="ordF"></div>
+    <button class="btn btn-g" onclick="nwOrd()">New set ↻</button>
+  </div>
+</div>
+</div>
 <script>
-/* ══════════════════════════════════
-   SHARED UTILITIES
-══════════════════════════════════ */
-function switchTab(name){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['learn','practice'][i]===name));
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('panel-'+name).classList.add('active');
-  if(name==='learn')drawLearn();
-  if(name==='practice'){drawPracRuler();newOrderQ();}
-}
+function sw(n){document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.textContent.toLowerCase()===n)});document.querySelectorAll('.pnl').forEach(function(p){var a=p.id==='p-'+n;p.classList.toggle('on',a);p.style.display=a?'flex':'none'})}
+document.getElementById('p-practice').style.display='none';
+function pool4(ans,lo,hi){var s=new Set([ans]);var i=0;while(s.size<4&&i<50){i++;var w=ans+Math.round(Math.random()*8-4);if(w>=lo&&w<=hi&&w!==ans)s.add(w)}return[...s].sort(function(){return Math.random()-.5})}
+function mkOpts(cid,items,correct,fid){var c=document.getElementById(cid);c.innerHTML='';items.forEach(function(n){var b=document.createElement('button');b.className='opt';b.textContent=n;b.onclick=function(){c.querySelectorAll('.opt').forEach(function(x){x.onclick=null});var fb=document.getElementById(fid);if(String(n)===String(correct)){b.classList.add('ok');fb.textContent='🎉 Correct!';fb.style.color='var(--ok)'}else{b.classList.add('no');fb.textContent='The answer is '+correct+'.';fb.style.color='var(--no)';c.querySelectorAll('.opt').forEach(function(x){if(String(x.textContent)===String(correct))x.classList.add('ok')})}};c.appendChild(b)})}
 
-let correct=0,total=0;
-function updateScore(){document.getElementById('scoreDisplay').textContent=correct+' correct / '+total+' total';}
+/* Ruler as pure HTML/SVG — no canvas, no DOM measurement */
+var fLen=8;var COLORS=['#0D9488','#7C3AED','#D97706','#DC2626','#2563EB','#16A34A'];
+function chL(d){fLen=Math.max(2,Math.min(14,fLen+d));document.getElementById('lv').textContent=fLen;document.getElementById('lenBig').textContent=fLen;drawR('rulerArea',fLen,true)}
+function drawR(id,len,showLabel){
+  var el=document.getElementById(id);var cmPx=28;var pad=8;var maxCm=15;
+  var w=pad*2+maxCm*cmPx+10;var h=80;
+  var col=COLORS[len%COLORS.length];var barW=len*cmPx;
+  var svg='<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" xmlns="http://www.w3.org/2000/svg">';
+  /* bar */
+  svg+='<rect x="'+pad+'" y="6" width="'+barW+'" height="22" rx="5" fill="'+col+'"/>';
+  if(showLabel&&barW>30)svg+='<text x="'+(pad+barW/2)+'" y="21" text-anchor="middle" fill="#fff" font-family="Grandstander,cursive" font-size="12" font-weight="800">'+len+' cm</text>';
+  if(!showLabel)svg+='<circle cx="'+(pad+barW+12)+'" cy="17" r="10" fill="'+col+'"/><text x="'+(pad+barW+12)+'" y="21" text-anchor="middle" fill="#fff" font-family="Grandstander,cursive" font-size="11" font-weight="900">?</text>';
+  /* guide lines */
+  svg+='<line x1="'+pad+'" y1="30" x2="'+pad+'" y2="42" stroke="'+col+'" stroke-width="1" stroke-dasharray="3,2"/>';
+  svg+='<line x1="'+(pad+barW)+'" y1="30" x2="'+(pad+barW)+'" y2="42" stroke="'+col+'" stroke-width="1" stroke-dasharray="3,2"/>';
+  /* ruler body */
+  svg+='<rect x="'+pad+'" y="42" width="'+(maxCm*cmPx)+'" height="30" rx="5" fill="#E0FFF0" stroke="#0D9488" stroke-width="1.5"/>';
+  /* ticks inside ruler */
+  for(var cm=0;cm<=maxCm;cm++){var x=pad+cm*cmPx;var big=cm%5===0;
+    svg+='<line x1="'+x+'" y1="42" x2="'+x+'" y2="'+(42+(big?16:10))+'" stroke="'+(big?'#0D9488':'#5EEAD4')+'" stroke-width="'+(big?2:1)+'"/>';
+    if(cm%5===0||cm===1)svg+='<text x="'+x+'" y="68" text-anchor="middle" fill="#0D9488" font-family="Poppins,sans-serif" font-size="'+(big?10:8)+'" font-weight="700">'+cm+'</text>'}
+  svg+='</svg>';el.innerHTML=svg}
+drawR('rulerArea',fLen,true);
+/* Practice: ruler quiz */
+var rAns=0;
+function nwRQ(){rAns=Math.floor(Math.random()*11)+2;document.getElementById('rF').textContent='';drawR('qRuler',rAns,false);mkOpts('rO',pool4(rAns,1,15),rAns,'rF')}
+nwRQ();
+/* Ordering */
+var ordItems=[],tapSeq=[],ordDone=false;var BC=['#0D9488','#7C3AED','#D97706'];var BL=['A','B','C'];
+function nwOrd(){var lens=new Set();while(lens.size<3)lens.add(Math.floor(Math.random()*9)+3);
+ordItems=[].concat([].concat(Array.from(lens))).sort(function(){return Math.random()-.5}).map(function(l,i){return{len:l,label:BL[i],color:BC[i]}});
+tapSeq=[];ordDone=false;document.getElementById('ordF').textContent='';document.getElementById('ordI').textContent='Tap the shortest bar.';rndrBars();rndrSlots()}
+function rndrBars(){var mx=Math.max.apply(null,ordItems.map(function(x){return x.len}));var el=document.getElementById('barList');el.innerHTML='';
+ordItems.forEach(function(item,i){var tapped=tapSeq.some(function(t){return t.label===item.label});
+var row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(0,0,0,.02);border-radius:12px;border:2px solid rgba(0,0,0,.06);cursor:pointer;transition:.18s;user-select:none;'+(tapped?'opacity:.5;cursor:default':'');
+row.innerHTML='<span style="font-size:14px;font-weight:900;color:'+item.color+';min-width:18px">'+item.label+'</span><div style="flex:1;height:26px;background:#E5E7EB;border-radius:8px;overflow:hidden"><div style="height:100%;width:'+Math.round(item.len/mx*100)+'%;background:'+item.color+';border-radius:8px;transition:.3s'+(tapped?';opacity:.4':'')+'"></div></div><span style="font-size:13px;font-weight:900;color:var(--ink2);min-width:36px;text-align:right">'+item.len+' cm</span>';
+if(!tapped&&!ordDone)row.onclick=function(){tapBar(i)};el.appendChild(row)})}
+function rndrSlots(){var labels=['1st','2nd','3rd'];var el=document.getElementById('ordSlots');el.innerHTML='';
+labels.forEach(function(lbl,i){var sl=document.createElement('div');sl.style.cssText='flex:1;min-width:70px;min-height:48px;border-radius:12px;border:2px dashed rgba(0,0,0,.1);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px';
+var filled=tapSeq[i];if(filled){sl.style.borderStyle='solid';sl.style.borderColor=filled.color;sl.innerHTML='<div style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--ink2)">'+lbl+'</div><div style="font-size:14px;font-weight:900;color:'+filled.color+'">'+filled.label+' — '+filled.len+' cm</div>'}
+else sl.innerHTML='<div style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--ink2)">'+lbl+'</div>';el.appendChild(sl)})}
+function tapBar(i){if(ordDone)return;tapSeq.push(ordItems[i]);rndrBars();rndrSlots();
+if(tapSeq.length===3){ordDone=true;var sorted=ordItems.slice().sort(function(a,b){return a.len-b.len});var ok=tapSeq.every(function(t,i){return t.len===sorted[i].len});var fb=document.getElementById('ordF');
+if(ok){fb.textContent='🎉 Correct!';fb.style.color='var(--ok)';document.getElementById('ordI').textContent='Well done!'}else{fb.textContent='Not quite. '+sorted.map(function(t){return t.label+' ('+t.len+'cm)'}).join(' → ');fb.style.color='var(--no)';document.getElementById('ordI').textContent='Press New set to try again.'}}
+else{var next=tapSeq.length===1?'second shortest':'longest';document.getElementById('ordI').textContent='Now tap the '+next+'.'}}
+nwOrd();
 
-/* Canvas sizing helper — sets canvas pixel dimensions to match CSS width */
-function sizeCanvas(cvs,h){
-  const w=cvs.parentElement.clientWidth-20||300;
-  cvs.width=w;cvs.height=h;
-  return{w,h,ctx:cvs.getContext('2d')};
-}
-
-/* Draw ruler — object zone above, ruler body below, ticks last so they're always on top */
-function drawRulerBase(ctx,w,h,maxCm,rulerTop){
-  const PAD=12;
-  const CM_PX=Math.floor((w-PAD*2)/maxCm);
-  const rulerH=h-rulerTop-4;
-  // ruler body (filled background first)
-  ctx.fillStyle='#CCFBF1';
-  ctx.beginPath();ctx.roundRect(PAD,rulerTop,maxCm*CM_PX,rulerH,6);ctx.fill();
-  return{PAD,CM_PX,rulerH};
-}
-
-/* Draw ticks on top of everything (called after object is drawn) */
-function drawRulerTicks(ctx,w,h,maxCm,rulerTop,PAD,CM_PX,rulerH){
-  // ruler border on top
-  ctx.strokeStyle='#0D9488';ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.roundRect(PAD,rulerTop,maxCm*CM_PX,rulerH,6);ctx.stroke();
-  // ticks — drawn inside the ruler body, never above it
-  for(let cm=0;cm<=maxCm;cm++){
-    const x=PAD+cm*CM_PX;
-    const major=cm%5===0;
-    const tickH=major?rulerH*0.55:rulerH*0.3;
-    ctx.strokeStyle=major?'#0F766E':'#5EEAD4';ctx.lineWidth=major?2:1.2;
-    ctx.beginPath();ctx.moveTo(x,rulerTop);ctx.lineTo(x,rulerTop+tickH);ctx.stroke();
-    // numbers inside ruler, near top
-    if(cm%5===0||cm===1){
-      ctx.fillStyle='#0F766E';
-      ctx.font=`700 ${cm%5===0?11:9}px Nunito`;
-      ctx.textAlign='center';
-      ctx.fillText(cm,x,rulerTop+tickH+11);
-    }
-  }
-  ctx.fillStyle='#0F766E';ctx.font='700 9px Nunito';ctx.textAlign='right';
-  ctx.fillText('cm',PAD+maxCm*CM_PX-4,rulerTop+rulerH-5);
-}
-
-/* ══════════════════════════════════
-   LEARN TAB — interactive ruler
-══════════════════════════════════ */
-let fishLen=8;
-const OBJ_COLORS=['#0D9488','#7C3AED','#D97706','#DC2626','#2563EB','#16A34A'];
-const OBJ_NAMES=['pencil','crayon','straw','ribbon','stick','rope'];
-
-function changeLen(d){
-  fishLen=Math.max(2,Math.min(14,fishLen+d));
-  document.getElementById('lenDisp').textContent=fishLen;
-  document.getElementById('lenBig').textContent=fishLen;
-  drawLearn();
-}
-
-function drawLearn(){
-  const cvs=document.getElementById('learnCvs');
-  const{w,h,ctx}=sizeCanvas(cvs,120);
-  ctx.clearRect(0,0,w,h);
-  const rulerTop=58; // ruler sits in lower half
-  const maxCm=15;
-  const{PAD,CM_PX,rulerH}=drawRulerBase(ctx,w,h,maxCm,rulerTop);
-  const col=OBJ_COLORS[fishLen%OBJ_COLORS.length];
-  const objW=fishLen*CM_PX;
-  const objH=24;
-  const objY=8; // object sits at top with clear gap before ruler
-
-  // vertical guide lines from object end-points down to ruler — subtle
-  ctx.strokeStyle='rgba(0,0,0,.10)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
-  ctx.beginPath();ctx.moveTo(PAD,objY+objH);ctx.lineTo(PAD,rulerTop);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(PAD+objW,objY+objH);ctx.lineTo(PAD+objW,rulerTop);ctx.stroke();
-  ctx.setLineDash([]);
-
-  // object bar (drawn BEFORE ticks so ticks sit on top)
-  ctx.fillStyle=col;ctx.beginPath();ctx.roundRect(PAD,objY,objW,objH,6);ctx.fill();
-  // darker right cap
-  ctx.fillStyle='rgba(0,0,0,.12)';ctx.beginPath();ctx.roundRect(PAD+objW-7,objY,7,objH,{upperRight:6,lowerRight:6});ctx.fill();
-  // label inside bar
-  if(objW>44){
-    ctx.fillStyle='#fff';ctx.font='700 13px Nunito';ctx.textAlign='center';
-    ctx.fillText(fishLen+' cm',PAD+objW/2,objY+objH/2+5);
-  }
-
-  // ticks drawn on top so they are always crisp and unobscured
-  drawRulerTicks(ctx,w,h,maxCm,rulerTop,PAD,CM_PX,rulerH);
-}
-window.addEventListener('resize',drawLearn);
-setTimeout(drawLearn,50);
-
-/* ══════════════════════════════════
-   PRACTICE Q1 — Read the ruler
-   Show ruler with a colored bar,
-   child picks length from 4 options.
-══════════════════════════════════ */
-let rulerAns=0;
-
-function newRulerQ(){
-  rulerAns=Math.floor(Math.random()*11)+2; // 2–12cm
-  document.getElementById('rulerFb').textContent='';
-  drawPracRuler();
-  // build options: correct + 3 distractors
-  const pool=new Set([rulerAns]);
-  const offs=[-3,-2,-1,1,2,3].sort(()=>Math.random()-.5);
-  for(const o of offs){if(pool.size>=4)break;const w=rulerAns+o;if(w>=1&&w<=15)pool.add(w);}
-  while(pool.size<4)pool.add(Math.floor(Math.random()*11)+2);
-  const opts=document.getElementById('rulerOpts');opts.innerHTML='';
-  [...pool].sort(()=>Math.random()-.5).forEach(n=>{
-    const b=document.createElement('button');b.className='opt';
-    b.innerHTML=n+'<span style="font-size:13px;font-weight:700;margin-left:3px">cm</span>';
-    b.onclick=()=>{
-      document.querySelectorAll('#rulerOpts .opt').forEach(x=>x.onclick=null);
-      total++;const fb=document.getElementById('rulerFb');
-      if(n===rulerAns){correct++;b.classList.add('correct');fb.textContent='Correct! It is '+rulerAns+' cm.';fb.style.color='var(--success)';}
-      else{b.classList.add('wrong');fb.textContent='Count again from 0. The answer is '+rulerAns+' cm.';fb.style.color='var(--error)';
-        document.querySelectorAll('#rulerOpts .opt').forEach(x=>{if(parseInt(x.textContent)===rulerAns)x.classList.add('correct');});}
-      updateScore();
-    };
-    opts.appendChild(b);
-  });
-}
-
-function drawPracRuler(){
-  const cvs=document.getElementById('pracCvs');
-  const{w,h,ctx}=sizeCanvas(cvs,120);
-  ctx.clearRect(0,0,w,h);
-  const rulerTop=58;
-  const maxCm=15;
-  const{PAD,CM_PX,rulerH}=drawRulerBase(ctx,w,h,maxCm,rulerTop);
-  const col=OBJ_COLORS[rulerAns%OBJ_COLORS.length];
-  const objW=rulerAns*CM_PX;
-  const objH=24;
-  const objY=8;
-
-  // guide lines
-  ctx.strokeStyle='rgba(0,0,0,.10)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
-  ctx.beginPath();ctx.moveTo(PAD,objY+objH);ctx.lineTo(PAD,rulerTop);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(PAD+objW,objY+objH);ctx.lineTo(PAD+objW,rulerTop);ctx.stroke();
-  ctx.setLineDash([]);
-
-  // mystery bar — no length label
-  ctx.fillStyle=col;ctx.beginPath();ctx.roundRect(PAD,objY,objW,objH,6);ctx.fill();
-  ctx.fillStyle='rgba(0,0,0,.12)';ctx.beginPath();ctx.roundRect(PAD+objW-7,objY,7,objH,{upperRight:6,lowerRight:6});ctx.fill();
-
-  // question mark badge at the right end of bar
-  ctx.fillStyle=col;ctx.beginPath();ctx.arc(PAD+objW+14,objY+objH/2,12,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#fff';ctx.font='800 14px Nunito';ctx.textAlign='center';
-  ctx.fillText('?',PAD+objW+14,objY+objH/2+5);
-
-  // ticks on top
-  drawRulerTicks(ctx,w,h,maxCm,rulerTop,PAD,CM_PX,rulerH);
-}
-window.addEventListener('resize',()=>{drawPracRuler();});
-
-/* ══════════════════════════════════
-   PRACTICE Q2 — Order by length
-   3 horizontal bars, tap shortest→longest.
-   Bars are proportional — the visual IS the measurement.
-══════════════════════════════════ */
-const BAR_COLORS=['#0D9488','#7C3AED','#D97706'];
-const BAR_LABELS=['A','B','C'];
-let orderItems=[],tapSequence=[],orderDone=false;
-
-function newOrderQ(){
-  // generate 3 distinct lengths
-  const lens=new Set();
-  while(lens.size<3)lens.add(Math.floor(Math.random()*9)+3);
-  orderItems=[...lens].sort(()=>Math.random()-.5).map((len,i)=>({len,label:BAR_LABELS[i],color:BAR_COLORS[i]}));
-  tapSequence=[];orderDone=false;
-  document.getElementById('orderFb').textContent='';
-  document.getElementById('orderInstr').innerHTML='Tap the <strong>shortest</strong> bar first.';
-  renderBars();
-  renderOrderSlots();
-}
-
-function renderBars(){
-  const maxLen=Math.max(...orderItems.map(x=>x.len));
-  const div=document.getElementById('barList');div.innerHTML='';
-  orderItems.forEach((item,i)=>{
-    const tapped=tapSequence.findIndex(t=>t.label===item.label);
-    const isTapped=tapped>=0;
-    const row=document.createElement('div');
-    row.className='bar-item'+(isTapped?' locked':'');
-    if(isTapped) row.classList.add('correct-order');
-    row.innerHTML=`
-      <span class="bar-label" style="color:${item.color}">${item.label}</span>
-      <div class="bar-track">
-        <div class="bar-fill" style="width:${Math.round(item.len/maxLen*100)}%;background:${item.color}${isTapped?';opacity:.5':''}"></div>
-      </div>
-      <span class="bar-cm">${item.len} cm</span>`;
-    if(!isTapped&&!orderDone){
-      row.onclick=()=>tapBar(i);
-    }
-    div.appendChild(row);
-  });
-}
-
-function renderOrderSlots(){
-  const labels=['1st — shortest','2nd','3rd — longest'];
-  const div=document.getElementById('orderSlots');div.innerHTML='';
-  labels.forEach((lbl,i)=>{
-    const slot=document.createElement('div');slot.className='order-slot';
-    const filled=tapSequence[i];
-    if(filled){
-      slot.classList.add('filled');
-      slot.innerHTML=`<div class="slot-label">${lbl}</div><div class="slot-content" style="color:${filled.color}">${filled.label} — ${filled.len} cm</div>`;
-    } else {
-      slot.innerHTML=`<div class="slot-label">${lbl}</div><div class="slot-content" style="color:var(--border)">—</div>`;
-    }
-    div.appendChild(slot);
-  });
-}
-
-function tapBar(i){
-  if(orderDone)return;
-  const item=orderItems[i];
-  tapSequence.push(item);
-  renderBars();
-  renderOrderSlots();
-
-  if(tapSequence.length===3){
-    orderDone=true;
-    checkOrder();
-  } else {
-    const nextLabel=tapSequence.length===1?'second shortest':'longest';
-    document.getElementById('orderInstr').innerHTML=`Good! Now tap the <strong>${nextLabel}</strong>.`;
-  }
-}
-
-function checkOrder(){
-  const sorted=[...orderItems].sort((a,b)=>a.len-b.len);
-  const ok=tapSequence.every((t,i)=>t.len===sorted[i].len);
-  const fb=document.getElementById('orderFb');
-  if(ok){
-    fb.textContent='Correct! '+tapSequence.map(t=>t.label+' ('+t.len+' cm)').join(' → ')+'.';
-    fb.style.color='var(--success)';
-    document.getElementById('orderInstr').innerHTML='<strong>Well done!</strong>';
-    // highlight slots green
-    document.querySelectorAll('.order-slot').forEach(s=>s.classList.add('correct-slot'));
-  } else {
-    fb.textContent='Not quite. Compare the numbers — '+sorted.map(t=>t.label+' ('+t.len+' cm)').join(' → ')+' is the right order.';
-    fb.style.color='var(--error)';
-    document.getElementById('orderInstr').innerHTML='Try again — press "New set" for a fresh go.';
-    document.querySelectorAll('.order-slot').forEach(s=>s.classList.add('wrong-slot'));
-  }
-}
-
-// Init
-setTimeout(()=>{newRulerQ();newOrderQ();},60);
 </script>
 </body>
 </html>

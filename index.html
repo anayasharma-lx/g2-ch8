@@ -4,253 +4,462 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chapter 8 · Measurement</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --ocean:#0B3D6B;--deep:#051E35;--teal:#14B8A6;--teal2:#0D9488;
-  --coral:#FF6B6B;--coral2:#EE5A5A;--sand:#FFF4E0;--foam:#E0FAFA;
-  --sky:#B8E8FF;--sun:#FFD93D;
+  --accent:#0D9488;--accent-light:#F0FDFA;--accent-mid:#99F6E4;
+  --accent-dark:#0F766E;--bg:#F7F8FA;--surface:#FFFFFF;
+  --ink:#1C2B2B;--ink2:#4B6060;--border:#E4EAE9;
+  --success:#16A34A;--success-bg:#DCFCE7;
+  --error:#DC2626;--error-bg:#FEE2E2;
 }
-html,body{width:100%;min-height:100vh}
-body{font-family:'Nunito',sans-serif;background:linear-gradient(180deg,#B8E8FF 0%,#7DD3FC 25%,#38BDF8 45%,#0284C7 65%,#0B3D6B 100%);min-height:100vh;padding:0 0 32px;display:flex;flex-direction:column;align-items:center;}
+html,body{width:100%;min-height:100vh;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);overflow-x:hidden}
 
-/* wave header */
-.ocean-header{
-  width:100%;background:linear-gradient(180deg,var(--deep),var(--ocean));
-  padding:16px 20px 28px;position:relative;overflow:hidden;
-  display:flex;align-items:center;justify-content:space-between;
+/* ── HEADER / TABS ── */
+.header{width:100%;background:var(--surface);border-bottom:2px solid var(--border);padding:16px 20px 0;display:flex;flex-direction:column;align-items:center;position:sticky;top:0;z-index:100}
+.header-row{width:100%;max-width:640px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.chapter-label{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);background:var(--accent-light);padding:4px 12px;border-radius:20px}
+.header-title{font-size:20px;font-weight:900;color:var(--ink)}
+.tabs{display:flex;gap:4px;width:100%;max-width:640px}
+.tab{flex:1;padding:10px 0;text-align:center;font-size:14px;font-weight:800;cursor:pointer;border-bottom:3px solid transparent;color:var(--ink2);transition:all .2s;border-radius:8px 8px 0 0}
+.tab:hover{color:var(--accent);background:var(--accent-light)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* ── LAYOUT ── */
+.page{width:100%;max-width:640px;margin:0 auto;padding:24px 16px 48px;display:flex;flex-direction:column;gap:20px}
+.panel{display:none}.panel.active{display:flex;flex-direction:column;gap:20px}
+
+/* ── CARD ── */
+.card{background:var(--surface);border-radius:16px;padding:22px;border:1.5px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.05);position:relative}
+.card-accent{position:absolute;top:0;left:0;bottom:0;width:4px;border-radius:16px 0 0 16px}
+.card-accent.teal{background:var(--accent)}
+.card-accent.green{background:#16A34A}
+.card-accent.amber{background:#D97706}
+.card-title{font-size:17px;font-weight:900;color:var(--ink);margin-bottom:4px;padding-left:12px}
+.card-sub{font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:20px;padding-left:12px;line-height:1.5}
+
+/* ── SCORE BAR ── */
+.score-bar{display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:10px;padding:10px 14px;border:1.5px solid var(--border)}
+.score-label{font-size:12px;font-weight:800;color:var(--ink2);flex:1}
+.score-nums{font-size:14px;font-weight:900;color:var(--accent)}
+
+/* ── SHARED BUTTONS ── */
+.next-btn{margin-top:16px;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:12px 26px;font-size:15px;font-weight:800;cursor:pointer;transition:all .18s;align-self:flex-start}
+.next-btn:hover{background:var(--accent-dark);transform:translateY(-1px)}
+.refresh-btn{background:var(--surface);border:2px solid var(--border);color:var(--ink2);font-size:14px;font-weight:800;padding:9px 20px;border-radius:10px;cursor:pointer;transition:all .15s;margin-top:4px}
+.refresh-btn:hover{border-color:var(--accent);color:var(--accent)}
+.check-btn{background:var(--accent);color:#fff;border:none;border-radius:12px;padding:12px 22px;font-size:15px;font-weight:800;cursor:pointer;transition:all .18s}
+.check-btn:hover{background:var(--accent-dark);transform:translateY(-1px)}
+.fb{font-size:15px;font-weight:800;min-height:22px;margin-top:12px;text-align:center}
+
+/* ══════════════════════════════════════
+   LEARN TAB — RULER EXPLORER
+══════════════════════════════════════ */
+.ctrl-row{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.ctrl-lbl{font-size:14px;font-weight:800;color:var(--ink2)}
+.ctrl-btn{width:40px;height:40px;border-radius:50%;border:none;background:var(--accent);color:#fff;font-size:22px;font-weight:900;cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ctrl-btn:active{transform:scale(.88)}
+.len-num{font-size:32px;font-weight:900;color:var(--accent-dark);min-width:36px;text-align:center}
+.ruler-wrap{border-radius:12px;background:var(--accent-light);border:1.5px solid var(--accent-mid);padding:10px;margin-bottom:16px}
+canvas{display:block;width:100%;border-radius:6px}
+.len-hero{text-align:center;padding:10px 0 4px}
+.len-big{font-size:68px;font-weight:900;color:var(--accent-dark);line-height:1}
+.len-unit{font-size:15px;font-weight:800;color:var(--ink2);margin-top:2px}
+
+/* ══════════════════════════════════════
+   PRACTICE — Q1: READ THE RULER
+   Show a ruler with a bar of mystery length,
+   child picks from 4 options
+══════════════════════════════════════ */
+.ruler-q-wrap{border-radius:12px;background:var(--accent-light);border:1.5px solid var(--accent-mid);padding:10px;margin-bottom:20px}
+.opts{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+.opt{font-size:22px;font-weight:900;min-width:68px;height:54px;border-radius:12px;border:2px solid var(--border);background:var(--surface);cursor:pointer;color:var(--ink);transition:all .14s;padding:0 14px;display:flex;align-items:center;justify-content:center}
+.opt:hover{border-color:var(--accent);background:var(--accent-light);transform:translateY(-2px)}
+.opt.correct{background:var(--success-bg);border-color:var(--success);color:var(--success)}
+.opt.wrong{background:var(--error-bg);border-color:var(--error);color:var(--error)}
+
+/* ══════════════════════════════════════
+   PRACTICE — Q2: ORDERING
+   Three horizontal bars of different lengths.
+   Child taps them in order shortest → longest.
+══════════════════════════════════════ */
+.order-instruction{font-size:14px;font-weight:800;color:var(--ink2);margin-bottom:14px;line-height:1.5}
+.bar-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.bar-item{
+  display:flex;align-items:center;gap:10px;
+  background:var(--bg);border-radius:12px;padding:10px 12px;
+  border:2px solid var(--border);cursor:pointer;transition:all .18s;
+  user-select:none;
 }
-.wave{position:absolute;bottom:0;left:0;right:0;height:18px;background:var(--teal);clip-path:polygon(0 100%,0 60%,2% 30%,4% 60%,6% 30%,8% 60%,10% 30%,12% 60%,14% 30%,16% 60%,18% 30%,20% 60%,22% 30%,24% 60%,26% 30%,28% 60%,30% 30%,32% 60%,34% 30%,36% 60%,38% 30%,40% 60%,42% 30%,44% 60%,46% 30%,48% 60%,50% 30%,52% 60%,54% 30%,56% 60%,58% 30%,60% 60%,62% 30%,64% 60%,66% 30%,68% 60%,70% 30%,72% 60%,74% 30%,76% 60%,78% 30%,80% 60%,82% 30%,84% 60%,86% 30%,88% 60%,90% 30%,92% 60%,94% 30%,96% 60%,98% 30%,100% 60%,100% 100%);}
-.bubbles{position:absolute;inset:0;pointer-events:none}
-.bub{position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,.3);animation:rise 3s ease-in infinite}
-@keyframes rise{from{opacity:.6;transform:translateY(0)}to{opacity:0;transform:translateY(-60px)}}
-.oh-title{font-family:'Fredoka One',cursive;font-size:26px;color:#fff;z-index:1;text-shadow:0 2px 0 rgba(0,0,0,.2)}
-.oh-chip{background:var(--coral);color:#fff;font-size:12px;font-weight:900;padding:5px 14px;border-radius:20px;z-index:1;border:2px solid rgba(255,255,255,.2)}
+.bar-item:hover{border-color:var(--accent-mid)}
+.bar-item.selected{border-color:var(--accent);background:var(--accent-light)}
+.bar-item.locked{cursor:default;opacity:.7}
+.bar-item.correct-order{border-color:var(--success);background:var(--success-bg)}
+.bar-label{font-size:15px;font-weight:900;color:var(--ink);min-width:20px;flex-shrink:0}
+.bar-track{flex:1;height:28px;background:var(--border);border-radius:8px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:8px;transition:width .3s}
+.bar-cm{font-size:14px;font-weight:900;color:var(--ink2);min-width:38px;text-align:right;flex-shrink:0}
 
-.page{width:100%;max-width:700px;padding:16px;display:flex;flex-direction:column;gap:20px}
-.ocard{background:rgba(255,255,255,.96);border-radius:24px;padding:20px;box-shadow:0 6px 0 rgba(0,0,0,.15),0 2px 20px rgba(0,0,0,.1);border:3px solid rgba(255,255,255,.9);position:relative;overflow:hidden}
-.ocard::before{content:'';position:absolute;top:0;left:0;right:0;height:6px;border-radius:24px 24px 0 0}
-.ocard.teal::before{background:var(--teal)}.ocard.coral::before{background:var(--coral)}.ocard.sun::before{background:var(--sun)}
-.oc-title{font-family:'Fredoka One',cursive;font-size:20px;color:var(--ocean);margin-bottom:4px}
-.hint{font-size:13px;font-weight:700;color:var(--teal2);margin-bottom:14px;line-height:1.5}
-
-/* fish controls */
-.fish-ctrl{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
-.fc-lbl{font-family:'Fredoka One',cursive;font-size:15px;color:var(--ocean)}
-.csbtn{width:36px;height:36px;border-radius:50%;border:none;background:var(--teal);color:#fff;font-size:20px;font-weight:900;cursor:pointer;transition:transform .1s;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 rgba(0,0,0,.15)}
-.csbtn:active{transform:scale(.88)}
-.len-disp{font-family:'Fredoka One',cursive;font-size:28px;color:var(--ocean);min-width:32px;text-align:center}
-
-.ruler-wrap{overflow-x:auto;border-radius:14px;background:var(--foam);border:2.5px solid var(--teal);padding:12px;margin-bottom:14px}
-canvas{display:block;border-radius:8px}
-.meas-hero{text-align:center;margin-bottom:8px}
-.meas-big{font-family:'Fredoka One',cursive;font-size:80px;color:var(--teal2);line-height:1;text-shadow:0 3px 0 rgba(0,0,0,.08)}
-.meas-unit{font-family:'Fredoka One',cursive;font-size:22px;color:var(--ocean);margin-top:2px}
-
-/* ordering activity */
-.fish-items{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
-.fish-card{background:var(--foam);border-radius:14px;padding:10px 14px;border:2.5px solid var(--teal);text-align:center;cursor:pointer;transition:all .18s;user-select:none}
-.fish-card:hover{border-color:var(--teal2);transform:scale(1.05)}
-.fish-card.selected{border-color:var(--coral);background:#FFE8E8;transform:scale(1.07);box-shadow:0 4px 10px rgba(255,107,107,.2)}
-.fc-emoji{font-size:30px;line-height:1.2}
-.fc-len{font-family:'Fredoka One',cursive;font-size:16px;color:var(--teal2)}
-
-.slot-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-.slot{
-  min-width:88px;min-height:72px;border-radius:14px;
-  border:2.5px dashed var(--teal);background:var(--foam);
+.order-slots{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.order-slot{
+  flex:1;min-width:80px;min-height:52px;border-radius:12px;
+  border:2px dashed var(--accent-mid);background:var(--accent-light);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  cursor:pointer;transition:all .15s;font-size:11px;font-weight:800;color:var(--teal2);text-align:center;padding:4px;
+  cursor:pointer;transition:all .15s;padding:6px 4px;
 }
-.slot:hover{border-color:var(--coral);background:#FFE8E8}
-.slot.filled{border-style:solid;border-color:var(--teal2);background:var(--foam)}
-.slot .s-emoji{font-size:26px;line-height:1.2}
-.slot .s-len{font-family:'Fredoka One',cursive;font-size:15px;color:var(--teal2)}
-.order-fb{font-family:'Fredoka One',cursive;font-size:16px;min-height:22px;margin-bottom:8px;text-align:center}
-.refresh-btn{background:var(--teal);color:#fff;border:none;border-radius:14px;padding:10px 22px;font-family:'Fredoka One',cursive;font-size:15px;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.12);transition:all .18s}
-.refresh-btn:hover{transform:scale(1.06)}
-
-/* quiz */
-.mq{font-family:'Fredoka One',cursive;font-size:17px;color:var(--ocean);margin-bottom:8px}
-.mvis{font-size:22px;margin:8px 0;min-height:28px}
-.type-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0}
-.type-inp{font-family:'Fredoka One',cursive;font-size:28px;width:80px;height:54px;border-radius:12px;border:3px solid var(--teal);text-align:center;color:var(--ocean);outline:none;background:var(--foam);-moz-appearance:textfield}
-.type-inp::-webkit-outer-spin-button,.type-inp::-webkit-inner-spin-button{-webkit-appearance:none}
-.type-inp:focus{border-color:var(--teal2)}
-.unit-lbl{font-family:'Fredoka One',cursive;font-size:17px;color:var(--teal2)}
-.check-btn{background:var(--teal);color:#fff;border:none;border-radius:12px;padding:12px 22px;font-family:'Fredoka One',cursive;font-size:16px;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.12);transition:all .18s}
-.check-btn:hover{transform:scale(1.06)}
-.type-fb{font-family:'Fredoka One',cursive;font-size:16px;min-height:22px;margin-top:8px}
-.next-btn{margin-top:12px;background:var(--teal);color:#fff;border:none;border-radius:16px;padding:12px 28px;font-family:'Fredoka One',cursive;font-size:17px;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.12);transition:all .18s}
-.next-btn:hover{transform:scale(1.06)}
+.order-slot:hover{border-color:var(--accent)}
+.order-slot.filled{border-style:solid;border-color:var(--accent-dark)}
+.order-slot.correct-slot{border-color:var(--success);background:var(--success-bg)}
+.order-slot.wrong-slot{border-color:var(--error);background:var(--error-bg)}
+.slot-label{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);margin-bottom:3px}
+.slot-content{font-size:14px;font-weight:900;color:var(--accent-dark)}
 </style>
 </head>
 <body>
 
-<div class="ocean-header">
-  <div class="bubbles" id="bubs"></div>
-  <div class="wave"></div>
-  <div class="oh-title">🐠 Measurement</div>
-  <div class="oh-chip">Chapter 8</div>
+<div class="header">
+  <div class="header-row">
+    <span class="chapter-label">Chapter 8</span>
+    <span class="header-title">Measurement</span>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('learn')">Learn</div>
+    <div class="tab" onclick="switchTab('practice')">Practice</div>
+  </div>
 </div>
 
 <div class="page">
 
-  <div class="ocard teal">
-    <div class="oc-title">📏 How long is the fish?</div>
-    <div class="hint">Press + and − to change the fish's length. Read the ruler to see how many centimetres it is. Count the marks from 0!</div>
-    <div class="fish-ctrl">
-      <span class="fc-lbl">Fish length:</span>
-      <button class="csbtn" onclick="changeLen(-1)">−</button>
-      <span class="len-disp" id="lenDisp">8</span>
-      <button class="csbtn" onclick="changeLen(1)">+</button>
-      <span class="fc-lbl">cm</span>
-    </div>
-    <div class="ruler-wrap"><canvas id="rulerCvs" width="580" height="110"></canvas></div>
-    <div class="meas-hero">
-      <div class="meas-big" id="measBig">8</div>
-      <div class="meas-unit">centimetres long</div>
+  <!-- ══ LEARN ══ -->
+  <div class="panel active" id="panel-learn">
+    <div class="card">
+      <div class="card-accent teal"></div>
+      <div class="card-title">How long is the object?</div>
+      <div class="card-sub">Press + and − to change the length. Read the ruler — count the marks from 0.</div>
+
+      <div class="ctrl-row">
+        <span class="ctrl-lbl">Length:</span>
+        <button class="ctrl-btn" onclick="changeLen(-1)">−</button>
+        <span class="len-num" id="lenDisp">8</span>
+        <button class="ctrl-btn" onclick="changeLen(1)">+</button>
+        <span class="ctrl-lbl">cm</span>
+      </div>
+
+      <div class="ruler-wrap">
+        <canvas id="learnCvs"></canvas>
+      </div>
+
+      <div class="len-hero">
+        <div class="len-big" id="lenBig">8</div>
+        <div class="len-unit">centimetres</div>
+      </div>
     </div>
   </div>
 
-  <div class="ocard coral">
-    <div class="oc-title">🐟 Order the fish — shortest to longest!</div>
-    <div class="hint">Tap a fish to select it (it glows orange), then tap where you want to put it — 1st is shortest, 3rd is longest!</div>
-    <div class="fish-items" id="fishItems"></div>
-    <div style="font-family:'Fredoka One',cursive;font-size:13px;color:var(--teal2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Put them in order:</div>
-    <div class="slot-row" id="slotRow"></div>
-    <div class="order-fb" id="orderFb"></div>
-    <button class="refresh-btn" onclick="newOrder()">New fish ↻</button>
-  </div>
-
-  <div class="ocard sun">
-    <div class="oc-title">✏️ Measurement question!</div>
-    <div class="hint">Read carefully, work out the answer, then type it!</div>
-    <div class="mq" id="mq">Loading…</div>
-    <div class="mvis" id="mvis"></div>
-    <div class="type-row">
-      <input type="number" class="type-inp" id="measInput" min="0" max="30" placeholder="?">
-      <span class="unit-lbl">cm</span>
-      <button class="check-btn" onclick="checkMeas()">Check ✓</button>
+  <!-- ══ PRACTICE ══ -->
+  <div class="panel" id="panel-practice">
+    <div class="score-bar">
+      <span class="score-label">Score</span>
+      <span class="score-nums" id="scoreDisplay">0 correct / 0 total</span>
     </div>
-    <div class="type-fb" id="measFb"></div>
-    <button class="next-btn" onclick="newMeasQ()">Next question ➡️</button>
-  </div>
 
+    <!-- Q1: Read the ruler -->
+    <div class="card">
+      <div class="card-accent teal"></div>
+      <div class="card-title">How long is this?</div>
+      <div class="card-sub">Look at the ruler. Count from 0 to where the object ends. Pick the right length.</div>
+      <div class="ruler-q-wrap">
+        <canvas id="pracCvs"></canvas>
+      </div>
+      <div class="opts" id="rulerOpts"></div>
+      <div class="fb" id="rulerFb"></div>
+      <button class="next-btn" onclick="newRulerQ()">Next →</button>
+    </div>
+
+    <!-- Q2: Order shortest to longest -->
+    <div class="card">
+      <div class="card-accent amber"></div>
+      <div class="card-title">Order shortest to longest</div>
+      <div class="card-sub">Look at the bars. Tap them in order — shortest first, longest last.</div>
+
+      <div class="order-instruction" id="orderInstr">Tap the <strong>shortest</strong> bar first.</div>
+      <div class="bar-list" id="barList"></div>
+
+      <div style="font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);margin-bottom:8px">Your order:</div>
+      <div class="order-slots" id="orderSlots"></div>
+
+      <div class="fb" id="orderFb"></div>
+      <button class="refresh-btn" onclick="newOrderQ()">New set ↻</button>
+    </div>
+
+  </div>
 </div>
 
 <script>
-/* Bubbles */
-const bubs=document.getElementById('bubs');
-for(let i=0;i<8;i++){const b=document.createElement('div');b.className='bub';const sz=4+Math.random()*10;b.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*90}%;bottom:${Math.random()*60}%;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*2}s`;bubs.appendChild(b);}
+/* ══════════════════════════════════
+   SHARED UTILITIES
+══════════════════════════════════ */
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['learn','practice'][i]===name));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  if(name==='learn')drawLearn();
+  if(name==='practice'){drawPracRuler();newOrderQ();}
+}
 
-/* Ruler + fish canvas */
-const CM_PX=36;
-let fishLen=8;
-const FISH_COLORS=['#14B8A6','#FF6B6B','#F59E0B','#8B5CF6','#EC4899','#06B6D4'];
+let correct=0,total=0;
+function updateScore(){document.getElementById('scoreDisplay').textContent=correct+' correct / '+total+' total';}
 
-function changeLen(d){fishLen=Math.max(2,Math.min(14,fishLen+d));document.getElementById('lenDisp').textContent=fishLen;document.getElementById('measBig').textContent=fishLen;drawRuler();}
+/* Canvas sizing helper — sets canvas pixel dimensions to match CSS width */
+function sizeCanvas(cvs,h){
+  const w=cvs.parentElement.clientWidth-20||300;
+  cvs.width=w;cvs.height=h;
+  return{w,h,ctx:cvs.getContext('2d')};
+}
 
-function drawRuler(){
-  const cvs=document.getElementById('rulerCvs');const ctx=cvs.getContext('2d');
-  const W=cvs.width,H=cvs.height;ctx.clearRect(0,0,W,H);
-  const LPAD=16,TOP=14;
-  // ruler body
-  ctx.fillStyle='#E0FAFA';ctx.strokeStyle='#14B8A6';ctx.lineWidth=2;
-  ctx.beginPath();ctx.roundRect(LPAD,55,15*CM_PX+4,36,6);ctx.fill();ctx.stroke();
-  // ticks
-  for(let cm=0;cm<=15;cm++){
-    const x=LPAD+cm*CM_PX;const major=cm%5===0;
-    ctx.strokeStyle=major?'#0D9488':'#5EEAD4';ctx.lineWidth=major?2:1.5;
-    ctx.beginPath();ctx.moveTo(x,55);ctx.lineTo(x,major?42:47);ctx.stroke();
-    if(major||cm===1){ctx.fillStyle='#0D9488';ctx.font=`bold ${major?13:10}px Nunito`;ctx.textAlign='center';ctx.fillText(cm,x,major?38:35);}
+/* Draw ruler — object zone above, ruler body below, ticks last so they're always on top */
+function drawRulerBase(ctx,w,h,maxCm,rulerTop){
+  const PAD=12;
+  const CM_PX=Math.floor((w-PAD*2)/maxCm);
+  const rulerH=h-rulerTop-4;
+  // ruler body (filled background first)
+  ctx.fillStyle='#CCFBF1';
+  ctx.beginPath();ctx.roundRect(PAD,rulerTop,maxCm*CM_PX,rulerH,6);ctx.fill();
+  return{PAD,CM_PX,rulerH};
+}
+
+/* Draw ticks on top of everything (called after object is drawn) */
+function drawRulerTicks(ctx,w,h,maxCm,rulerTop,PAD,CM_PX,rulerH){
+  // ruler border on top
+  ctx.strokeStyle='#0D9488';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.roundRect(PAD,rulerTop,maxCm*CM_PX,rulerH,6);ctx.stroke();
+  // ticks — drawn inside the ruler body, never above it
+  for(let cm=0;cm<=maxCm;cm++){
+    const x=PAD+cm*CM_PX;
+    const major=cm%5===0;
+    const tickH=major?rulerH*0.55:rulerH*0.3;
+    ctx.strokeStyle=major?'#0F766E':'#5EEAD4';ctx.lineWidth=major?2:1.2;
+    ctx.beginPath();ctx.moveTo(x,rulerTop);ctx.lineTo(x,rulerTop+tickH);ctx.stroke();
+    // numbers inside ruler, near top
+    if(cm%5===0||cm===1){
+      ctx.fillStyle='#0F766E';
+      ctx.font=`700 ${cm%5===0?11:9}px Nunito`;
+      ctx.textAlign='center';
+      ctx.fillText(cm,x,rulerTop+tickH+11);
+    }
   }
-  ctx.fillStyle='#0D9488';ctx.font='bold 10px Nunito';ctx.textAlign='right';ctx.fillText('cm',W-4,95);
-  // fish
-  const col=FISH_COLORS[fishLen%FISH_COLORS.length];
-  const fishW=fishLen*CM_PX;const fx=LPAD;const fy=TOP;const fh=28;
-  // body ellipse
-  ctx.fillStyle=col;ctx.beginPath();ctx.ellipse(fx+fishW/2,fy+fh/2,fishW/2-1,fh/2,0,0,Math.PI*2);ctx.fill();
-  // tail
-  ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(fx+4,fy+2);ctx.lineTo(fx-8,fy+fh/2);ctx.lineTo(fx+4,fy+fh-2);ctx.closePath();ctx.fill();
-  // eye
-  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(fx+fishW*.78,fy+fh*.3,4,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#1E293B';ctx.beginPath();ctx.arc(fx+fishW*.78+.5,fy+fh*.3-.5,2,0,Math.PI*2);ctx.fill();
-  // arrow
-  ctx.strokeStyle='#0D9488';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
-  ctx.beginPath();ctx.moveTo(fx,52);ctx.lineTo(fx+fishW,52);ctx.stroke();ctx.setLineDash([]);
-  ctx.fillStyle='#0D9488';ctx.font='bold 12px Fredoka One,cursive';ctx.textAlign='center';
-  ctx.fillText('← '+fishLen+' cm →',fx+fishW/2,H-4);
+  ctx.fillStyle='#0F766E';ctx.font='700 9px Nunito';ctx.textAlign='right';
+  ctx.fillText('cm',PAD+maxCm*CM_PX-4,rulerTop+rulerH-5);
 }
-drawRuler();
 
-/* Fish ordering */
-const FISH_NAMES=['Rohu','Catla','Hilsa','Pomfret','Bream'];
-const FISH_EM=['🐟','🐠','🐡','🦈','🐬'];
-let orderFish=[],selFish=null,orderSlots=[];
+/* ══════════════════════════════════
+   LEARN TAB — interactive ruler
+══════════════════════════════════ */
+let fishLen=8;
+const OBJ_COLORS=['#0D9488','#7C3AED','#D97706','#DC2626','#2563EB','#16A34A'];
+const OBJ_NAMES=['pencil','crayon','straw','ribbon','stick','rope'];
 
-function newOrder(){
-  const lens=new Set();while(lens.size<3)lens.add(Math.floor(Math.random()*8)+3);
-  orderFish=[...lens].sort(()=>Math.random()-.5).map((l,i)=>({name:FISH_NAMES[i],em:FISH_EM[i],len:l,placed:false}));
-  orderSlots=[null,null,null];selFish=null;
-  document.getElementById('orderFb').textContent='';
-  renderFishItems();renderSlots();
+function changeLen(d){
+  fishLen=Math.max(2,Math.min(14,fishLen+d));
+  document.getElementById('lenDisp').textContent=fishLen;
+  document.getElementById('lenBig').textContent=fishLen;
+  drawLearn();
 }
-function renderFishItems(){
-  const div=document.getElementById('fishItems');div.innerHTML='';
-  orderFish.forEach((f,i)=>{
-    if(f.placed)return;
-    const c=document.createElement('div');c.className='fish-card';if(selFish===i)c.classList.add('selected');
-    c.innerHTML=`<div class="fc-emoji">${f.em}</div><div>${f.name}</div><div class="fc-len">${f.len} cm</div>`;
-    c.onclick=()=>{selFish=i;renderFishItems();};div.appendChild(c);
-  });
+
+function drawLearn(){
+  const cvs=document.getElementById('learnCvs');
+  const{w,h,ctx}=sizeCanvas(cvs,120);
+  ctx.clearRect(0,0,w,h);
+  const rulerTop=58; // ruler sits in lower half
+  const maxCm=15;
+  const{PAD,CM_PX,rulerH}=drawRulerBase(ctx,w,h,maxCm,rulerTop);
+  const col=OBJ_COLORS[fishLen%OBJ_COLORS.length];
+  const objW=fishLen*CM_PX;
+  const objH=24;
+  const objY=8; // object sits at top with clear gap before ruler
+
+  // vertical guide lines from object end-points down to ruler — subtle
+  ctx.strokeStyle='rgba(0,0,0,.10)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(PAD,objY+objH);ctx.lineTo(PAD,rulerTop);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(PAD+objW,objY+objH);ctx.lineTo(PAD+objW,rulerTop);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // object bar (drawn BEFORE ticks so ticks sit on top)
+  ctx.fillStyle=col;ctx.beginPath();ctx.roundRect(PAD,objY,objW,objH,6);ctx.fill();
+  // darker right cap
+  ctx.fillStyle='rgba(0,0,0,.12)';ctx.beginPath();ctx.roundRect(PAD+objW-7,objY,7,objH,{upperRight:6,lowerRight:6});ctx.fill();
+  // label inside bar
+  if(objW>44){
+    ctx.fillStyle='#fff';ctx.font='700 13px Nunito';ctx.textAlign='center';
+    ctx.fillText(fishLen+' cm',PAD+objW/2,objY+objH/2+5);
+  }
+
+  // ticks drawn on top so they are always crisp and unobscured
+  drawRulerTicks(ctx,w,h,maxCm,rulerTop,PAD,CM_PX,rulerH);
 }
-function renderSlots(){
-  const div=document.getElementById('slotRow');div.innerHTML='';
-  ['1st (shortest)','2nd','3rd (longest)'].forEach((lbl,i)=>{
-    const s=document.createElement('div');s.className='slot'+(orderSlots[i]?' filled':'');
-    if(orderSlots[i])s.innerHTML=`<div class="s-emoji">${orderSlots[i].em}</div><div class="s-len">${orderSlots[i].len} cm</div>`;
-    else s.textContent=lbl;
-    s.onclick=()=>{
-      if(selFish===null&&orderSlots[i]){orderFish.forEach(f=>{if(f===orderSlots[i])f.placed=false;});orderSlots[i]=null;renderFishItems();renderSlots();checkOrder();return;}
-      if(selFish!==null&&!orderSlots[i]){orderFish[selFish].placed=true;orderSlots[i]=orderFish[selFish];selFish=null;renderFishItems();renderSlots();checkOrder();}
+window.addEventListener('resize',drawLearn);
+setTimeout(drawLearn,50);
+
+/* ══════════════════════════════════
+   PRACTICE Q1 — Read the ruler
+   Show ruler with a colored bar,
+   child picks length from 4 options.
+══════════════════════════════════ */
+let rulerAns=0;
+
+function newRulerQ(){
+  rulerAns=Math.floor(Math.random()*11)+2; // 2–12cm
+  document.getElementById('rulerFb').textContent='';
+  drawPracRuler();
+  // build options: correct + 3 distractors
+  const pool=new Set([rulerAns]);
+  const offs=[-3,-2,-1,1,2,3].sort(()=>Math.random()-.5);
+  for(const o of offs){if(pool.size>=4)break;const w=rulerAns+o;if(w>=1&&w<=15)pool.add(w);}
+  while(pool.size<4)pool.add(Math.floor(Math.random()*11)+2);
+  const opts=document.getElementById('rulerOpts');opts.innerHTML='';
+  [...pool].sort(()=>Math.random()-.5).forEach(n=>{
+    const b=document.createElement('button');b.className='opt';
+    b.innerHTML=n+'<span style="font-size:13px;font-weight:700;margin-left:3px">cm</span>';
+    b.onclick=()=>{
+      document.querySelectorAll('#rulerOpts .opt').forEach(x=>x.onclick=null);
+      total++;const fb=document.getElementById('rulerFb');
+      if(n===rulerAns){correct++;b.classList.add('correct');fb.textContent='Correct! It is '+rulerAns+' cm.';fb.style.color='var(--success)';}
+      else{b.classList.add('wrong');fb.textContent='Count again from 0. The answer is '+rulerAns+' cm.';fb.style.color='var(--error)';
+        document.querySelectorAll('#rulerOpts .opt').forEach(x=>{if(parseInt(x.textContent)===rulerAns)x.classList.add('correct');});}
+      updateScore();
     };
-    div.appendChild(s);
+    opts.appendChild(b);
   });
 }
-function checkOrder(){
-  if(orderSlots.some(s=>s===null))return;
-  const sorted=[...orderFish].sort((a,b)=>a.len-b.len);
-  const ok=orderSlots.every((s,i)=>s&&s.len===sorted[i].len);
-  const fb=document.getElementById('orderFb');
-  if(ok){fb.textContent='🎉 Perfect! Shortest → '+orderSlots.map(s=>s.len+' cm').join(' → longest ')+'!';fb.style.color='var(--teal2)';}
-  else{fb.textContent='Compare the cm numbers and try a different order!';fb.style.color='var(--coral)';}
-}
-newOrder();
 
-/* Quiz */
-let mAns=0;
-const TYPES=['read','longer','shorter','diff'];
-function newMeasQ(){
-  const t=TYPES[Math.floor(Math.random()*TYPES.length)];
-  const l1=Math.floor(Math.random()*8)+3,l2=Math.floor(Math.random()*8)+3;
-  document.getElementById('measFb').textContent='';document.getElementById('measInput').value='';
-  const types={
-    read:()=>{mAns=l1;document.getElementById('mq').textContent='A ribbon is '+l1+' cm long. Type the length:';document.getElementById('mvis').textContent='🎀 '+'—'.repeat(l1)+' ('+l1+' cm)';},
-    longer:()=>{mAns=Math.max(l1,l2);document.getElementById('mq').textContent='Pencil A is '+l1+' cm. Pencil B is '+l2+' cm. How long is the longer pencil?';document.getElementById('mvis').textContent='✏️ '+l1+' cm   vs   ✏️ '+l2+' cm';},
-    shorter:()=>{mAns=Math.min(l1,l2);document.getElementById('mq').textContent='Stick A is '+l1+' cm. Stick B is '+l2+' cm. How long is the shorter one?';document.getElementById('mvis').textContent='🔧 '+l1+' cm   vs   🔧 '+l2+' cm';},
-    diff:()=>{mAns=Math.abs(l1-l2);document.getElementById('mq').textContent='Rope A is '+l1+' cm. Rope B is '+l2+' cm. How many cm longer is the longer rope?';document.getElementById('mvis').textContent='🪢 '+l1+' cm   vs   🪢 '+l2+' cm';}
-  };
-  types[t]();
+function drawPracRuler(){
+  const cvs=document.getElementById('pracCvs');
+  const{w,h,ctx}=sizeCanvas(cvs,120);
+  ctx.clearRect(0,0,w,h);
+  const rulerTop=58;
+  const maxCm=15;
+  const{PAD,CM_PX,rulerH}=drawRulerBase(ctx,w,h,maxCm,rulerTop);
+  const col=OBJ_COLORS[rulerAns%OBJ_COLORS.length];
+  const objW=rulerAns*CM_PX;
+  const objH=24;
+  const objY=8;
+
+  // guide lines
+  ctx.strokeStyle='rgba(0,0,0,.10)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(PAD,objY+objH);ctx.lineTo(PAD,rulerTop);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(PAD+objW,objY+objH);ctx.lineTo(PAD+objW,rulerTop);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // mystery bar — no length label
+  ctx.fillStyle=col;ctx.beginPath();ctx.roundRect(PAD,objY,objW,objH,6);ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,.12)';ctx.beginPath();ctx.roundRect(PAD+objW-7,objY,7,objH,{upperRight:6,lowerRight:6});ctx.fill();
+
+  // question mark badge at the right end of bar
+  ctx.fillStyle=col;ctx.beginPath();ctx.arc(PAD+objW+14,objY+objH/2,12,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font='800 14px Nunito';ctx.textAlign='center';
+  ctx.fillText('?',PAD+objW+14,objY+objH/2+5);
+
+  // ticks on top
+  drawRulerTicks(ctx,w,h,maxCm,rulerTop,PAD,CM_PX,rulerH);
 }
-function checkMeas(){
-  const v=parseInt(document.getElementById('measInput').value);const fb=document.getElementById('measFb');
-  if(v===mAns){fb.textContent='🎉 Correct! '+mAns+' cm! ⭐';fb.style.color='var(--teal2)';}
-  else if(isNaN(v)){fb.textContent='Type a number!';fb.style.color='var(--coral)';}
-  else{fb.textContent='Not quite — think carefully and try again!';fb.style.color='var(--coral)';}
+window.addEventListener('resize',()=>{drawPracRuler();});
+
+/* ══════════════════════════════════
+   PRACTICE Q2 — Order by length
+   3 horizontal bars, tap shortest→longest.
+   Bars are proportional — the visual IS the measurement.
+══════════════════════════════════ */
+const BAR_COLORS=['#0D9488','#7C3AED','#D97706'];
+const BAR_LABELS=['A','B','C'];
+let orderItems=[],tapSequence=[],orderDone=false;
+
+function newOrderQ(){
+  // generate 3 distinct lengths
+  const lens=new Set();
+  while(lens.size<3)lens.add(Math.floor(Math.random()*9)+3);
+  orderItems=[...lens].sort(()=>Math.random()-.5).map((len,i)=>({len,label:BAR_LABELS[i],color:BAR_COLORS[i]}));
+  tapSequence=[];orderDone=false;
+  document.getElementById('orderFb').textContent='';
+  document.getElementById('orderInstr').innerHTML='Tap the <strong>shortest</strong> bar first.';
+  renderBars();
+  renderOrderSlots();
 }
-newMeasQ();
+
+function renderBars(){
+  const maxLen=Math.max(...orderItems.map(x=>x.len));
+  const div=document.getElementById('barList');div.innerHTML='';
+  orderItems.forEach((item,i)=>{
+    const tapped=tapSequence.findIndex(t=>t.label===item.label);
+    const isTapped=tapped>=0;
+    const row=document.createElement('div');
+    row.className='bar-item'+(isTapped?' locked':'');
+    if(isTapped) row.classList.add('correct-order');
+    row.innerHTML=`
+      <span class="bar-label" style="color:${item.color}">${item.label}</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${Math.round(item.len/maxLen*100)}%;background:${item.color}${isTapped?';opacity:.5':''}"></div>
+      </div>
+      <span class="bar-cm">${item.len} cm</span>`;
+    if(!isTapped&&!orderDone){
+      row.onclick=()=>tapBar(i);
+    }
+    div.appendChild(row);
+  });
+}
+
+function renderOrderSlots(){
+  const labels=['1st — shortest','2nd','3rd — longest'];
+  const div=document.getElementById('orderSlots');div.innerHTML='';
+  labels.forEach((lbl,i)=>{
+    const slot=document.createElement('div');slot.className='order-slot';
+    const filled=tapSequence[i];
+    if(filled){
+      slot.classList.add('filled');
+      slot.innerHTML=`<div class="slot-label">${lbl}</div><div class="slot-content" style="color:${filled.color}">${filled.label} — ${filled.len} cm</div>`;
+    } else {
+      slot.innerHTML=`<div class="slot-label">${lbl}</div><div class="slot-content" style="color:var(--border)">—</div>`;
+    }
+    div.appendChild(slot);
+  });
+}
+
+function tapBar(i){
+  if(orderDone)return;
+  const item=orderItems[i];
+  tapSequence.push(item);
+  renderBars();
+  renderOrderSlots();
+
+  if(tapSequence.length===3){
+    orderDone=true;
+    checkOrder();
+  } else {
+    const nextLabel=tapSequence.length===1?'second shortest':'longest';
+    document.getElementById('orderInstr').innerHTML=`Good! Now tap the <strong>${nextLabel}</strong>.`;
+  }
+}
+
+function checkOrder(){
+  const sorted=[...orderItems].sort((a,b)=>a.len-b.len);
+  const ok=tapSequence.every((t,i)=>t.len===sorted[i].len);
+  const fb=document.getElementById('orderFb');
+  if(ok){
+    fb.textContent='Correct! '+tapSequence.map(t=>t.label+' ('+t.len+' cm)').join(' → ')+'.';
+    fb.style.color='var(--success)';
+    document.getElementById('orderInstr').innerHTML='<strong>Well done!</strong>';
+    // highlight slots green
+    document.querySelectorAll('.order-slot').forEach(s=>s.classList.add('correct-slot'));
+  } else {
+    fb.textContent='Not quite. Compare the numbers — '+sorted.map(t=>t.label+' ('+t.len+' cm)').join(' → ')+' is the right order.';
+    fb.style.color='var(--error)';
+    document.getElementById('orderInstr').innerHTML='Try again — press "New set" for a fresh go.';
+    document.querySelectorAll('.order-slot').forEach(s=>s.classList.add('wrong-slot'));
+  }
+}
+
+// Init
+setTimeout(()=>{newRulerQ();newOrderQ();},60);
 </script>
 </body>
 </html>
